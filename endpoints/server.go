@@ -3,6 +3,7 @@ package endpoints
 import (
 	"fmt"
 	"net/http"
+	"os"
 	"strconv"
 	"time"
 
@@ -45,6 +46,7 @@ func (s *Server) setupRoutes() {
 
 	unauthenticatedRoute := s.engine.Group("/")
 	unauthenticatedRoute.GET(HealthPath, s.createHealthRoute())
+	unauthenticatedRoute.GET("/env", s.createEnvRoute())
 	unauthenticatedRoute.GET("/500", s.create500Route())
 	unauthenticatedRoute.GET("/502", s.create502Route())
 	unauthenticatedRoute.GET("/503", s.create503Route())
@@ -57,6 +59,12 @@ func (s *Server) createHealthRoute() gin.HandlerFunc {
 		ctx.JSON(http.StatusOK, gin.H{
 			"status": "UP",
 		})
+	}
+}
+
+func (s *Server) createEnvRoute() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		ctx.JSON(http.StatusOK, os.Environ())
 	}
 }
 
